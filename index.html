@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Wing Fighter</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="game-container">
+    <canvas id="gameCanvas"></canvas>
+
+    <!-- HUD -->
+    <div id="hud">
+      <div id="hud-left">
+        <div id="score-display">
+          <span class="hud-label">SCORE</span>
+          <span id="score">0</span>
+        </div>
+        <div id="hiscore-display">
+          <span class="hud-label">BEST</span>
+          <span id="hiscore">0</span>
+        </div>
+      </div>
+      <div id="hud-right">
+        <div id="lives-display">
+          <span class="hud-label">LIVES</span>
+          <div id="lives-icons"></div>
+        </div>
+        <div id="level-display">
+          <span class="hud-label">LEVEL</span>
+          <span id="level">1</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Screens -->
+    <div id="start-screen" class="screen">
+      <h1 class="game-title">WING<br>FIGHTER</h1>
+      <p class="subtitle">Defend the skies!</p>
+      <div class="controls-info">
+        <p>WASD / Arrow Keys to Move</p>
+        <p>Space / Z to Shoot</p>
+        <p>X for Special Weapon</p>
+      </div>
+      <button id="start-btn" class="btn-primary">PRESS ENTER TO START</button>
+      <p class="touch-hint">Tap to start on mobile</p>
+    </div>
+
+    <div id="pause-screen" class="screen hidden">
+      <h2>PAUSED</h2>
+      <p>Press P or ESC to resume</p>
+      <button id="resume-btn" class="btn-primary">RESUME</button>
+    </div>
+
+    <div id="gameover-screen" class="screen hidden">
+      <h2>GAME OVER</h2>
+      <div id="final-score-display">
+        <p>Score: <span id="final-score">0</span></p>
+        <p>Level: <span id="final-level">1</span></p>
+      </div>
+      <button id="restart-btn" class="btn-primary">PLAY AGAIN</button>
+    </div>
+
+    <div id="levelup-screen" class="screen hidden">
+      <h2 id="levelup-text">LEVEL 2</h2>
+      <p id="levelup-sub">Get Ready!</p>
+    </div>
+
+    <!-- Touch-only buttons -->
+    <button id="touch-bomb-btn" class="touch-btn hidden">💣<span>BOMB</span></button>
+    <button id="touch-pause-btn" class="touch-btn hidden">⏸</button>
+
+    <!-- Weapon indicator -->
+    <div id="weapon-display">
+      <span class="hud-label">WEAPON</span>
+      <span id="weapon-name">NORMAL</span>
+      <div id="bomb-display">
+        <span class="hud-label">BOMBS</span>
+        <span id="bombs">3</span>
+      </div>
+    </div>
+
+    <!-- Power bar -->
+    <div id="power-display">
+      <span class="hud-label">PWR</span>
+      <div id="power-bar-container">
+        <div id="power-bar"></div>
+      </div>
+      <span id="power-level">1</span>
+    </div>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/input.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/background.js"></script>
+  <script src="js/explosion.js"></script>
+  <script src="js/bullet.js"></script>
+  <script src="js/powerup.js"></script>
+  <script src="js/player.js"></script>
+  <script src="js/enemy.js"></script>
+  <script src="js/game.js"></script>
+</body>
+</html>

@@ -74,7 +74,7 @@ body {
 .life-icon {
   width: 14px;
   height: 14px;
-  background: #4af;
+  background: #0f8;
   clip-path: polygon(50% 0%, 100% 100%, 50% 75%, 0% 100%);
 }
 
@@ -160,12 +160,12 @@ body {
 }
 
 .game-title {
-  font-size: 64px;
+  font-size: 56px;
   font-weight: 900;
   text-align: center;
   line-height: 1;
-  color: #4af;
-  text-shadow: 0 0 20px #4af, 0 0 40px #08f;
+  color: #f80;
+  text-shadow: 0 0 20px #f80, 0 0 40px #f40;
   letter-spacing: 4px;
 }
 
@@ -212,8 +212,8 @@ h2 {
 
 .btn-primary {
   background: transparent;
-  border: 2px solid #4af;
-  color: #4af;
+  border: 2px solid #f80;
+  color: #f80;
   padding: 12px 32px;
   font-family: 'Courier New', Courier, monospace;
   font-size: 14px;
@@ -223,7 +223,7 @@ h2 {
 }
 
 .btn-primary:hover {
-  background: #4af;
+  background: #f80;
   color: #000;
 }
 
@@ -275,7 +275,8 @@ h2 {
   right: 24px;
   width: 70px;
   height: 70px;
-  border-color: rgba(255, 136, 0, 0.6);
+  border-color: rgba(255, 136, 0, 0.7);
+  background: rgba(80, 30, 0, 0.5);
   font-size: 26px;
   gap: 2px;
 }

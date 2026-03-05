@@ -368,18 +368,28 @@ const Game = (() => {
   }
 
   function drawStartBg() {
-    // Animated demo enemies on start screen
+    // Animated enemy silhouettes drifting down on title screen
     ctx.save();
-    ctx.globalAlpha = 0.3;
+    ctx.globalAlpha = 0.28;
     const t = frameCount;
+    const cols = ['#d4a84a', '#c8883a', '#b87040', '#a06030', '#784020'];
     for (let i = 0; i < 5; i++) {
       const x = (CONFIG.WIDTH / 5) * i + CONFIG.WIDTH / 10;
-      const y = ((t * 0.5 + i * 80) % (CONFIG.HEIGHT + 80)) - 40;
-      ctx.fillStyle = ['#f84', '#f44', '#f4f', '#f84', '#f00'][i];
+      const y = ((t * 0.6 + i * 110) % (CONFIG.HEIGHT + 100)) - 50;
+      ctx.fillStyle = cols[i % cols.length];
+      // Simple fighter silhouette
       ctx.beginPath();
-      ctx.moveTo(x, y + 15);
-      ctx.lineTo(x - 15, y - 15);
-      ctx.lineTo(x + 15, y - 15);
+      ctx.moveTo(x,      y - 14);
+      ctx.lineTo(x + 3,  y - 4);
+      ctx.lineTo(x + 16, y + 4);
+      ctx.lineTo(x + 12, y + 14);
+      ctx.lineTo(x + 3,  y + 10);
+      ctx.lineTo(x + 2,  y + 14);
+      ctx.lineTo(x - 2,  y + 14);
+      ctx.lineTo(x - 3,  y + 10);
+      ctx.lineTo(x - 12, y + 14);
+      ctx.lineTo(x - 16, y + 4);
+      ctx.lineTo(x - 3,  y - 4);
       ctx.closePath();
       ctx.fill();
     }

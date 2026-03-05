@@ -1,35 +1,45 @@
-// ─── Enemy Types ───────────────────────────────────────────────────────────────
+// ─── Enemy Types — Iranian Air Force ──────────────────────────────────────────
 
 const ENEMY_DEFS = {
-  scout: {
-    w: 28, h: 24, hp: 1, speed: 1.5, score: 100,
-    color: '#f84', shootRate: 120, bulletCount: 1,
-    isBoss: false,
+  f5: {
+    w: 28, h: 26, hp: 1, speed: 2.0, score: 100,
+    color: '#d4a84a', shootRate: 120, bulletCount: 1,
+    isBoss: false, label: 'F-5',
   },
-  fighter: {
-    w: 32, h: 28, hp: 3, speed: 1.2, score: 250,
-    color: '#f44', shootRate: 90, bulletCount: 2,
-    isBoss: false,
+  yak130: {
+    w: 34, h: 28, hp: 3, speed: 1.5, score: 220,
+    color: '#c8883a', shootRate: 95, bulletCount: 2,
+    isBoss: false, label: 'Yak-130',
   },
-  bomber: {
-    w: 40, h: 32, hp: 6, speed: 0.8, score: 400,
-    color: '#f4f', shootRate: 75, bulletCount: 3,
-    isBoss: false,
+  f4: {
+    w: 38, h: 30, hp: 5, speed: 1.3, score: 350,
+    color: '#b87040', shootRate: 80, bulletCount: 2,
+    isBoss: false, label: 'F-4',
   },
-  elite: {
-    w: 36, h: 30, hp: 8, speed: 1.8, score: 600,
-    color: '#f00', shootRate: 60, bulletCount: 2,
-    isBoss: false,
+  su25: {
+    w: 40, h: 32, hp: 7, speed: 0.9, score: 480,
+    color: '#a06030', shootRate: 70, bulletCount: 3,
+    isBoss: false, label: 'Su-25',
   },
-  boss1: {
-    w: 80, h: 72, hp: 120, speed: 0.8, score: 2000,
-    color: '#f84', shootRate: 30, bulletCount: 4,
-    isBoss: true,
+  su24: {
+    w: 42, h: 30, hp: 9, speed: 1.1, score: 600,
+    color: '#8a5028', shootRate: 62, bulletCount: 3,
+    isBoss: false, label: 'Su-24',
   },
-  boss2: {
-    w: 96, h: 88, hp: 200, speed: 1.0, score: 3500,
-    color: '#f4f', shootRate: 22, bulletCount: 6,
-    isBoss: true,
+  mig29: {
+    w: 40, h: 34, hp: 12, speed: 2.0, score: 800,
+    color: '#784020', shootRate: 50, bulletCount: 2,
+    isBoss: false, label: 'MiG-29',
+  },
+  f14: {
+    w: 88, h: 78, hp: 140, speed: 0.8, score: 2500,
+    color: '#c86820', shootRate: 28, bulletCount: 5,
+    isBoss: true, label: 'F-14 TOMCAT',
+  },
+  su35: {
+    w: 100, h: 90, hp: 240, speed: 1.1, score: 4000,
+    color: '#a04818', shootRate: 20, bulletCount: 7,
+    isBoss: true, label: 'Su-35 FLANKER',
   },
 };
 
@@ -182,84 +192,269 @@ class Enemy {
     const w = this.w, h = this.h;
 
     ctx.shadowColor = c;
-    ctx.shadowBlur = 6;
+    ctx.shadowBlur = 5;
 
     switch (this.type) {
-      case 'scout': {
+
+      case 'f5': {
+        // F-5 Tiger II — small, swept wings, twin tail fins
         ctx.fillStyle = c;
+        // Body
         ctx.beginPath();
-        ctx.moveTo(x, y + h / 2);
-        ctx.lineTo(x - w / 2, y - h / 2);
-        ctx.lineTo(x, y - h / 4);
-        ctx.lineTo(x + w / 2, y - h / 2);
+        ctx.moveTo(x,      y - h/2);
+        ctx.lineTo(x + 3,  y - h/4);
+        ctx.lineTo(x + 4,  y + h/4);
+        ctx.lineTo(x + 2,  y + h/2);
+        ctx.lineTo(x - 2,  y + h/2);
+        ctx.lineTo(x - 4,  y + h/4);
+        ctx.lineTo(x - 3,  y - h/4);
+        ctx.closePath();
+        ctx.fill();
+        // Swept wings
+        ctx.fillStyle = '#b89040';
+        ctx.beginPath();
+        ctx.moveTo(x - 3,  y);
+        ctx.lineTo(x - w/2, y + 6);
+        ctx.lineTo(x - w/2 + 3, y + h/3);
+        ctx.lineTo(x - 4,  y + h/4);
+        ctx.closePath();
+        ctx.fill();
+        ctx.beginPath();
+        ctx.moveTo(x + 3,  y);
+        ctx.lineTo(x + w/2, y + 6);
+        ctx.lineTo(x + w/2 - 3, y + h/3);
+        ctx.lineTo(x + 4,  y + h/4);
         ctx.closePath();
         ctx.fill();
         // Cockpit
-        ctx.fillStyle = '#ff8';
+        ctx.fillStyle = '#224';
         ctx.beginPath();
-        ctx.ellipse(x, y, 4, 6, 0, 0, Math.PI * 2);
+        ctx.ellipse(x, y - h/5, 2.5, 4, 0, 0, Math.PI * 2);
         ctx.fill();
         break;
       }
-      case 'fighter': {
+
+      case 'yak130': {
+        // Yak-130 — swept wings, twin engines under wings
         ctx.fillStyle = c;
         ctx.beginPath();
-        ctx.moveTo(x, y + h / 2);
-        ctx.lineTo(x - w * 0.4, y);
-        ctx.lineTo(x - w / 2, y - h / 2);
-        ctx.lineTo(x + w / 2, y - h / 2);
-        ctx.lineTo(x + w * 0.4, y);
+        ctx.moveTo(x,      y - h/2);
+        ctx.lineTo(x + 4,  y - h/4);
+        ctx.lineTo(x + 5,  y + h/3);
+        ctx.lineTo(x + 2,  y + h/2);
+        ctx.lineTo(x - 2,  y + h/2);
+        ctx.lineTo(x - 5,  y + h/3);
+        ctx.lineTo(x - 4,  y - h/4);
         ctx.closePath();
         ctx.fill();
-        // Details
-        ctx.fillStyle = '#800';
-        ctx.fillRect(x - 2, y - h / 2, 4, h * 0.6);
-        // Wing cannons
-        ctx.fillStyle = '#888';
-        ctx.fillRect(x - w / 2 - 2, y - 2, 8, 4);
-        ctx.fillRect(x + w / 2 - 6, y - 2, 8, 4);
+        // Wings (moderate sweep)
+        ctx.fillStyle = '#a87030';
+        ctx.beginPath();
+        ctx.moveTo(x - 4,  y - h/5);
+        ctx.lineTo(x - w/2, y + 4);
+        ctx.lineTo(x - w/2+2, y + h/3);
+        ctx.lineTo(x - 5,  y + h/4);
+        ctx.closePath();
+        ctx.fill();
+        ctx.beginPath();
+        ctx.moveTo(x + 4,  y - h/5);
+        ctx.lineTo(x + w/2, y + 4);
+        ctx.lineTo(x + w/2-2, y + h/3);
+        ctx.lineTo(x + 5,  y + h/4);
+        ctx.closePath();
+        ctx.fill();
+        // Twin engine pods
+        ctx.fillStyle = '#604020';
+        ctx.fillRect(x - w/2 + 2, y + 2, 5, 8);
+        ctx.fillRect(x + w/2 - 7, y + 2, 5, 8);
+        // Canopy (tandem)
+        ctx.fillStyle = '#224';
+        ctx.fillRect(x - 2, y - h/2 + 3, 4, 8);
         break;
       }
-      case 'bomber': {
+
+      case 'f4': {
+        // F-4 Phantom II — large, bent wings, drooped stabilisers
         ctx.fillStyle = c;
-        roundRect(ctx, x - w / 2, y - h / 2, w, h, 6);
-        ctx.fill();
-        // Engine pods
-        ctx.fillStyle = '#800';
         ctx.beginPath();
-        ctx.ellipse(x - w / 2 + 5, y + h / 4, 6, 10, 0, 0, Math.PI * 2);
+        ctx.moveTo(x,      y - h/2);     // nose
+        ctx.lineTo(x + 5,  y - h/4);
+        ctx.lineTo(x + 6,  y + h/4);
+        ctx.lineTo(x + 4,  y + h/2);
+        ctx.lineTo(x - 4,  y + h/2);
+        ctx.lineTo(x - 6,  y + h/4);
+        ctx.lineTo(x - 5,  y - h/4);
+        ctx.closePath();
+        ctx.fill();
+        // Angled wings (bent — F-4 characteristic)
+        ctx.fillStyle = '#986030';
+        // Left: inner flat, outer angled down → show as slightly wider
+        ctx.beginPath();
+        ctx.moveTo(x - 5,  y - h/6);
+        ctx.lineTo(x - w/2, y + 2);
+        ctx.lineTo(x - w/2 + 2, y + h/3);
+        ctx.lineTo(x - 6,  y + h/5);
+        ctx.closePath();
         ctx.fill();
         ctx.beginPath();
-        ctx.ellipse(x + w / 2 - 5, y + h / 4, 6, 10, 0, 0, Math.PI * 2);
+        ctx.moveTo(x + 5,  y - h/6);
+        ctx.lineTo(x + w/2, y + 2);
+        ctx.lineTo(x + w/2 - 2, y + h/3);
+        ctx.lineTo(x + 6,  y + h/5);
+        ctx.closePath();
         ctx.fill();
-        // Bomb bays
-        ctx.fillStyle = '#600';
-        for (let i = -1; i <= 1; i++) {
-          ctx.fillRect(x + i * 10 - 2, y + 2, 4, 8);
+        // Drooped horizontal stabilisers (angled)
+        ctx.fillStyle = '#784828';
+        ctx.beginPath();
+        ctx.moveTo(x - 4,  y + h/2 - 4);
+        ctx.lineTo(x - w/3, y + h/2 + 4);
+        ctx.lineTo(x - w/3 + 3, y + h/2 + 8);
+        ctx.lineTo(x - 3,  y + h/2);
+        ctx.closePath();
+        ctx.fill();
+        ctx.beginPath();
+        ctx.moveTo(x + 4,  y + h/2 - 4);
+        ctx.lineTo(x + w/3, y + h/2 + 4);
+        ctx.lineTo(x + w/3 - 3, y + h/2 + 8);
+        ctx.lineTo(x + 3,  y + h/2);
+        ctx.closePath();
+        ctx.fill();
+        // Canopy (two-seat)
+        ctx.fillStyle = '#224';
+        ctx.fillRect(x - 2, y - h/2 + 2, 4, 9);
+        break;
+      }
+
+      case 'su25': {
+        // Su-25 Frogfoot — straight wings, twin engines, stubby
+        ctx.fillStyle = c;
+        roundRect(ctx, x - 5, y - h/2, 10, h, 4);
+        ctx.fill();
+        // Straight wings
+        ctx.fillStyle = '#885028';
+        ctx.fillRect(x - w/2, y - h/10, w, h/3);
+        // Engine nacelles under wings
+        ctx.fillStyle = '#503018';
+        ctx.beginPath();
+        ctx.ellipse(x - w/2 + 8, y + h/8, 5, 8, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.ellipse(x + w/2 - 8, y + h/8, 5, 8, 0, 0, Math.PI * 2);
+        ctx.fill();
+        // Hardpoints (weapons)
+        ctx.fillStyle = '#333';
+        for (const dx of [-16, -8, 8, 16]) {
+          ctx.fillRect(x + dx - 1, y + 2, 2, 6);
         }
+        // Canopy
+        ctx.fillStyle = '#224';
+        ctx.beginPath();
+        ctx.ellipse(x, y - h/4, 3, 5, 0, 0, Math.PI * 2);
+        ctx.fill();
         break;
       }
-      case 'elite': {
+
+      case 'su24': {
+        // Su-24 Fencer — variable sweep wing bomber (shown swept)
         ctx.fillStyle = c;
         ctx.beginPath();
-        ctx.moveTo(x, y - h / 2);
-        ctx.lineTo(x + w / 2, y);
-        ctx.lineTo(x + w * 0.3, y + h / 2);
-        ctx.lineTo(x - w * 0.3, y + h / 2);
-        ctx.lineTo(x - w / 2, y);
+        ctx.moveTo(x,      y - h/2);
+        ctx.lineTo(x + 5,  y - h/3);
+        ctx.lineTo(x + 6,  y + h/3);
+        ctx.lineTo(x + 3,  y + h/2);
+        ctx.lineTo(x - 3,  y + h/2);
+        ctx.lineTo(x - 6,  y + h/3);
+        ctx.lineTo(x - 5,  y - h/3);
         ctx.closePath();
         ctx.fill();
-        // Glow core
-        const grd = ctx.createRadialGradient(x, y, 0, x, y, w / 3);
-        grd.addColorStop(0, '#ff8888');
-        grd.addColorStop(1, 'transparent');
-        ctx.fillStyle = grd;
+        // Swept-back wings (variable geometry at max sweep)
+        ctx.fillStyle = '#704020';
         ctx.beginPath();
-        ctx.arc(x, y, w / 3, 0, Math.PI * 2);
+        ctx.moveTo(x - 5,  y - h/4);
+        ctx.lineTo(x - w/2, y + h/5);
+        ctx.lineTo(x - w/2 + 4, y + h/2 - 4);
+        ctx.lineTo(x - 6,  y + h/3);
+        ctx.closePath();
+        ctx.fill();
+        ctx.beginPath();
+        ctx.moveTo(x + 5,  y - h/4);
+        ctx.lineTo(x + w/2, y + h/5);
+        ctx.lineTo(x + w/2 - 4, y + h/2 - 4);
+        ctx.lineTo(x + 6,  y + h/3);
+        ctx.closePath();
+        ctx.fill();
+        // Tandem cockpit
+        ctx.fillStyle = '#224';
+        ctx.fillRect(x - 2, y - h/2 + 2, 4, 10);
+        // Twin exhausts
+        ctx.fillStyle = '#333';
+        ctx.fillRect(x - 4, y + h/2 - 4, 3, 6);
+        ctx.fillRect(x + 1, y + h/2 - 4, 3, 6);
+        break;
+      }
+
+      case 'mig29': {
+        // MiG-29 Fulcrum — twin engine, LERX, twin tails
+        ctx.fillStyle = c;
+        // Wide blended body
+        ctx.beginPath();
+        ctx.moveTo(x,      y - h/2);
+        ctx.lineTo(x + 6,  y - h/4);
+        ctx.lineTo(x + 8,  y + h/5);
+        ctx.lineTo(x + 5,  y + h/2);
+        ctx.lineTo(x - 5,  y + h/2);
+        ctx.lineTo(x - 8,  y + h/5);
+        ctx.lineTo(x - 6,  y - h/4);
+        ctx.closePath();
+        ctx.fill();
+        // Delta wings with LERX
+        ctx.fillStyle = '#603818';
+        ctx.beginPath();
+        ctx.moveTo(x - 6,  y - h/4);
+        ctx.lineTo(x - w/2, y + h/8);
+        ctx.lineTo(x - w/2 + 3, y + h/2 - 4);
+        ctx.lineTo(x - 8,  y + h/5);
+        ctx.closePath();
+        ctx.fill();
+        ctx.beginPath();
+        ctx.moveTo(x + 6,  y - h/4);
+        ctx.lineTo(x + w/2, y + h/8);
+        ctx.lineTo(x + w/2 - 3, y + h/2 - 4);
+        ctx.lineTo(x + 8,  y + h/5);
+        ctx.closePath();
+        ctx.fill();
+        // Twin tail fins
+        ctx.fillStyle = '#502810';
+        ctx.beginPath();
+        ctx.moveTo(x - 4,  y + h/4);
+        ctx.lineTo(x - 9,  y + h/3);
+        ctx.lineTo(x - 7,  y + h/2);
+        ctx.lineTo(x - 3,  y + h/2);
+        ctx.closePath();
+        ctx.fill();
+        ctx.beginPath();
+        ctx.moveTo(x + 4,  y + h/4);
+        ctx.lineTo(x + 9,  y + h/3);
+        ctx.lineTo(x + 7,  y + h/2);
+        ctx.lineTo(x + 3,  y + h/2);
+        ctx.closePath();
+        ctx.fill();
+        // Canopy
+        ctx.fillStyle = '#224';
+        ctx.beginPath();
+        ctx.ellipse(x, y - h/4, 3, 6, 0, 0, Math.PI * 2);
         ctx.fill();
         break;
       }
     }
+
+    // Aircraft label
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = 'rgba(255,200,100,0.8)';
+    ctx.font = '8px Courier New';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'top';
+    ctx.fillText(this.label || '', x, y + h / 2 + 3);
   }
 
   drawBoss(ctx, x, y) {
@@ -268,97 +463,191 @@ class Enemy {
     const pulse = Math.sin(this.age * 0.08) * 0.3 + 0.7;
 
     ctx.shadowColor = c;
-    ctx.shadowBlur = 20;
+    ctx.shadowBlur = 22;
 
-    if (this.type === 'boss1') {
-      // Central body
-      ctx.fillStyle = '#442200';
-      roundRect(ctx, x - w / 2, y - h / 2, w, h, 10);
-      ctx.fill();
-
-      // Armor plates
-      ctx.fillStyle = c;
-      ctx.fillRect(x - w / 2 + 4, y - h / 2 + 4, w - 8, 14);
-      ctx.fillRect(x - w / 2 + 4, y, w - 8, 14);
-
-      // Wings
-      ctx.fillStyle = '#663300';
+    if (this.type === 'f14') {
+      // ── F-14 Tomcat — large variable-sweep wing interceptor ──────────────
+      // Fuselage
+      ctx.fillStyle = '#604020';
       ctx.beginPath();
-      ctx.moveTo(x - w / 2, y - 10);
-      ctx.lineTo(x - w, y + 20);
-      ctx.lineTo(x - w * 0.6, y + h / 2);
-      ctx.lineTo(x - w / 2, y + h / 2 - 10);
-      ctx.closePath();
-      ctx.fill();
-      ctx.beginPath();
-      ctx.moveTo(x + w / 2, y - 10);
-      ctx.lineTo(x + w, y + 20);
-      ctx.lineTo(x + w * 0.6, y + h / 2);
-      ctx.lineTo(x + w / 2, y + h / 2 - 10);
+      ctx.moveTo(x,      y - h/2);      // nose
+      ctx.lineTo(x + 8,  y - h/4);
+      ctx.lineTo(x + 10, y + h/4);
+      ctx.lineTo(x + 7,  y + h/2);
+      ctx.lineTo(x - 7,  y + h/2);
+      ctx.lineTo(x - 10, y + h/4);
+      ctx.lineTo(x - 8,  y - h/4);
       ctx.closePath();
       ctx.fill();
 
-      // Cannons
-      ctx.fillStyle = '#888';
-      for (let i = -2; i <= 2; i += 2) {
-        ctx.fillRect(x + i * 14 - 3, y + h / 2 - 4, 6, 12);
-      }
-
-      // Eye
-      ctx.fillStyle = `rgba(255,200,0,${pulse})`;
+      // Variable-sweep wings (partially swept)
+      ctx.fillStyle = '#4a3018';
       ctx.beginPath();
-      ctx.ellipse(x, y - 10, 12, 8, 0, 0, Math.PI * 2);
+      ctx.moveTo(x - 8,  y - h/6);
+      ctx.lineTo(x - w/2, y + h/6);
+      ctx.lineTo(x - w/2 + 6, y + h/2 - 8);
+      ctx.lineTo(x - 10, y + h/3);
+      ctx.closePath();
+      ctx.fill();
+      ctx.beginPath();
+      ctx.moveTo(x + 8,  y - h/6);
+      ctx.lineTo(x + w/2, y + h/6);
+      ctx.lineTo(x + w/2 - 6, y + h/2 - 8);
+      ctx.lineTo(x + 10, y + h/3);
+      ctx.closePath();
       ctx.fill();
 
-    } else if (this.type === 'boss2') {
-      // Larger cruiser
-      ctx.fillStyle = '#220033';
-      roundRect(ctx, x - w / 2, y - h / 2, w, h, 12);
+      // Twin tail fins (F-14 characteristic)
+      ctx.fillStyle = '#382010';
+      ctx.beginPath();
+      ctx.moveTo(x - 6,  y + h/4);
+      ctx.lineTo(x - 14, y + h/3);
+      ctx.lineTo(x - 12, y + h/2);
+      ctx.lineTo(x - 5,  y + h/2);
+      ctx.closePath();
+      ctx.fill();
+      ctx.beginPath();
+      ctx.moveTo(x + 6,  y + h/4);
+      ctx.lineTo(x + 14, y + h/3);
+      ctx.lineTo(x + 12, y + h/2);
+      ctx.lineTo(x + 5,  y + h/2);
+      ctx.closePath();
       ctx.fill();
 
-      // Hull details
-      ctx.strokeStyle = c;
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.moveTo(x - w / 2 + 4, y - h / 4);
-      ctx.lineTo(x + w / 2 - 4, y - h / 4);
-      ctx.stroke();
-      ctx.beginPath();
-      ctx.moveTo(x - w / 2 + 4, y + h / 4);
-      ctx.lineTo(x + w / 2 - 4, y + h / 4);
-      ctx.stroke();
+      // Twin exhausts
+      ctx.fillStyle = '#222';
+      ctx.fillRect(x - 7, y + h/2 - 4, 5, 8);
+      ctx.fillRect(x + 2, y + h/2 - 4, 5, 8);
 
-      // Side wings
-      ctx.fillStyle = '#440055';
-      for (const side of [-1, 1]) {
-        ctx.beginPath();
-        ctx.moveTo(x + side * w / 2, y - h / 3);
-        ctx.lineTo(x + side * (w / 2 + 40), y);
-        ctx.lineTo(x + side * (w / 2 + 30), y + h / 3);
-        ctx.lineTo(x + side * w / 2, y + h / 3);
-        ctx.closePath();
-        ctx.fill();
-      }
+      // Canopy (two-seat tandem)
+      ctx.fillStyle = '#224';
+      ctx.fillRect(x - 3, y - h/2 + 4, 6, 14);
 
-      // Multiple turrets
+      // Missile rails under wings
       ctx.fillStyle = '#888';
-      const turretPositions = [-30, -15, 0, 15, 30];
-      for (const tx of turretPositions) {
-        ctx.beginPath();
-        ctx.arc(x + tx, y + h / 2 - 6, 5, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.fillRect(x + tx - 2, y + h / 2 - 4, 4, 10);
+      for (const dx of [-w/2+10, -w/2+20, w/2-20, w/2-10]) {
+        ctx.fillRect(x + dx, y + h/8, 3, 8);
       }
 
-      // Core glow
-      const grd = ctx.createRadialGradient(x, y, 0, x, y, 30);
-      grd.addColorStop(0, `rgba(255,100,255,${pulse * 0.5})`);
+      // Radar glow (pulse)
+      const grd = ctx.createRadialGradient(x, y - h/2, 0, x, y - h/2, 20);
+      grd.addColorStop(0, `rgba(255,180,0,${pulse * 0.6})`);
       grd.addColorStop(1, 'transparent');
       ctx.fillStyle = grd;
       ctx.beginPath();
-      ctx.arc(x, y, 30, 0, Math.PI * 2);
+      ctx.arc(x, y - h/2, 20, 0, Math.PI * 2);
+      ctx.fill();
+
+    } else if (this.type === 'su35') {
+      // ── Su-35 Flanker-E — super-manoeuvrable twin-engine fighter ─────────
+      // Wide blended fuselage
+      ctx.fillStyle = '#502818';
+      ctx.beginPath();
+      ctx.moveTo(x,      y - h/2);
+      ctx.lineTo(x + 10, y - h/3);
+      ctx.lineTo(x + 12, y + h/5);
+      ctx.lineTo(x + 8,  y + h/2);
+      ctx.lineTo(x - 8,  y + h/2);
+      ctx.lineTo(x - 12, y + h/5);
+      ctx.lineTo(x - 10, y - h/3);
+      ctx.closePath();
+      ctx.fill();
+
+      // Large delta wings
+      ctx.fillStyle = '#3a1e0e';
+      ctx.beginPath();
+      ctx.moveTo(x - 10, y - h/3);
+      ctx.lineTo(x - w/2, y + h/6);
+      ctx.lineTo(x - w/2 + 8, y + h/2 - 6);
+      ctx.lineTo(x - 12, y + h/4);
+      ctx.closePath();
+      ctx.fill();
+      ctx.beginPath();
+      ctx.moveTo(x + 10, y - h/3);
+      ctx.lineTo(x + w/2, y + h/6);
+      ctx.lineTo(x + w/2 - 8, y + h/2 - 6);
+      ctx.lineTo(x + 12, y + h/4);
+      ctx.closePath();
+      ctx.fill();
+
+      // Canards (forward fins)
+      ctx.fillStyle = '#6a3820';
+      ctx.beginPath();
+      ctx.moveTo(x - 9,  y - h/3);
+      ctx.lineTo(x - 20, y - h/4);
+      ctx.lineTo(x - 18, y - h/8);
+      ctx.lineTo(x - 10, y - h/5);
+      ctx.closePath();
+      ctx.fill();
+      ctx.beginPath();
+      ctx.moveTo(x + 9,  y - h/3);
+      ctx.lineTo(x + 20, y - h/4);
+      ctx.lineTo(x + 18, y - h/8);
+      ctx.lineTo(x + 10, y - h/5);
+      ctx.closePath();
+      ctx.fill();
+
+      // Twin tall tail fins
+      ctx.fillStyle = '#2a1008';
+      ctx.beginPath();
+      ctx.moveTo(x - 7,  y + h/5);
+      ctx.lineTo(x - 16, y + h/3);
+      ctx.lineTo(x - 13, y + h/2);
+      ctx.lineTo(x - 5,  y + h/2);
+      ctx.closePath();
+      ctx.fill();
+      ctx.beginPath();
+      ctx.moveTo(x + 7,  y + h/5);
+      ctx.lineTo(x + 16, y + h/3);
+      ctx.lineTo(x + 13, y + h/2);
+      ctx.lineTo(x + 5,  y + h/2);
+      ctx.closePath();
+      ctx.fill();
+
+      // Twin engine nozzles
+      ctx.fillStyle = '#1a0a04';
+      ctx.beginPath();
+      ctx.ellipse(x - 6, y + h/2, 5, 6, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.ellipse(x + 6, y + h/2, 5, 6, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Afterburner glow
+      const flame1 = ctx.createRadialGradient(x - 6, y + h/2 + 8, 0, x - 6, y + h/2 + 8, 14 * pulse);
+      flame1.addColorStop(0, 'rgba(255,255,200,0.9)');
+      flame1.addColorStop(0.4, 'rgba(255,120,0,0.6)');
+      flame1.addColorStop(1, 'transparent');
+      ctx.fillStyle = flame1;
+      ctx.beginPath();
+      ctx.arc(x - 6, y + h/2 + 8, 14 * pulse, 0, Math.PI * 2);
+      ctx.fill();
+      const flame2 = ctx.createRadialGradient(x + 6, y + h/2 + 8, 0, x + 6, y + h/2 + 8, 14 * pulse);
+      flame2.addColorStop(0, 'rgba(255,255,200,0.9)');
+      flame2.addColorStop(0.4, 'rgba(255,120,0,0.6)');
+      flame2.addColorStop(1, 'transparent');
+      ctx.fillStyle = flame2;
+      ctx.beginPath();
+      ctx.arc(x + 6, y + h/2 + 8, 14 * pulse, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Core radar glow
+      const coreGrd = ctx.createRadialGradient(x, y, 0, x, y, 35);
+      coreGrd.addColorStop(0, `rgba(255,100,0,${pulse * 0.3})`);
+      coreGrd.addColorStop(1, 'transparent');
+      ctx.fillStyle = coreGrd;
+      ctx.beginPath();
+      ctx.arc(x, y, 35, 0, Math.PI * 2);
       ctx.fill();
     }
+
+    // Boss label
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = `rgba(255,180,0,${pulse})`;
+    ctx.font = 'bold 10px Courier New';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'top';
+    ctx.fillText(this.label || '', x, y + h / 2 + 4);
   }
 
   drawBossHPBar(ctx) {
@@ -415,10 +704,10 @@ class EnemyManager {
   }
 
   buildWaves(level) {
-    // Each wave is { delay, enemies: [{type, x, y, pattern}] }
     const waves = [];
-    const types = ['scout', 'scout', 'fighter', 'fighter', 'bomber', 'bomber', 'elite', 'elite'];
-    const available = types.slice(0, Math.min(2 + Math.floor(level * 0.8), types.length));
+    // Aircraft unlocked progressively by level
+    const roster = ['f5', 'yak130', 'f4', 'su25', 'su24', 'mig29'];
+    const available = roster.slice(0, Math.min(1 + Math.floor(level * 0.8), roster.length));
 
     for (let w = 0; w < 6 + level * 2; w++) {
       const count = randInt(2, 3 + Math.floor(level / 2));
@@ -438,9 +727,9 @@ class EnemyManager {
 
     // Boss wave at level >= 3
     if (level >= 3) {
-      const bossType = level >= 6 ? 'boss2' : 'boss1';
+      const bossType = level >= 6 ? 'su35' : 'f14';
       waves.push({ delay: 300, isBoss: true, enemies: [{
-        type: bossType, x: CONFIG.WIDTH / 2, y: -80, pattern: 'bossHover',
+        type: bossType, x: CONFIG.WIDTH / 2, y: -90, pattern: 'bossHover',
       }]});
     }
 

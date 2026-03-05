@@ -9,7 +9,7 @@ const Game = (() => {
   let frameCount = 0;
 
   // Systems
-  let bg, player, bullets, enemies, powerups, explosions;
+  let bg, player, bullets, enemies, groundMgr, powerups, explosions;
   let level = 1;
   let score = 0;
   let hiscore = 0;
@@ -29,6 +29,7 @@ const Game = (() => {
     player     = new Player();
     bullets    = new BulletManager();
     enemies    = new EnemyManager();
+    groundMgr  = new GroundUnitManager();
     powerups   = new PowerupManager();
     explosions = new ExplosionManager();
 
@@ -59,9 +60,11 @@ const Game = (() => {
     player.reset();
     bullets.clear();
     enemies.clear();
+    groundMgr.clear();
     powerups.clear();
     explosions.clear();
     enemies.setLevel(level);
+    groundMgr.setLevel(level);
     showScreen(null);
     updateHUD();
     setState(STATE.PLAYING);
@@ -110,9 +113,15 @@ const Game = (() => {
     if (Input.isBomb()) {
       if (player.useBomb(bullets, enemies.enemies, explosions)) {
         bombFlash = 20;
-        // Spawn explosions for all enemies
         for (const e of enemies.enemies) {
           if (!e.isBoss) explosions.add(e.x, e.y, 'medium');
+        }
+        // Bomb also clears SAM missiles and damages ground units
+        groundMgr.missiles = [];
+        for (const u of groundMgr.units) {
+          u.hp -= 15;
+          explosions.add(u.x, u.y, 'big');
+          if (u.hp <= 0) { u.active = false; score += u.score; }
         }
         updateHUD();
       }
@@ -123,6 +132,7 @@ const Game = (() => {
     player.update();
     bullets.update();
     enemies.update(bullets, player.x, player.y);
+    groundMgr.update(bullets, player, explosions);
     powerups.update();
     explosions.update();
 
@@ -139,8 +149,10 @@ const Game = (() => {
     if (player.alive && !player.invincible) {
       checkPlayerVsEnemyBullets();
       checkPlayerVsEnemies();
+      checkPlayerVsSAMissiles();
     }
     checkPlayerBulletsVsEnemies();
+    checkPlayerBulletsVsGroundUnits();
     checkPlayerVsPowerups();
 
     // Level progression
@@ -216,6 +228,56 @@ const Game = (() => {
     }
   }
 
+  function checkPlayerVsSAMissiles() {
+    const pb = player.hitbox;
+    for (const m of groundMgr.missiles) {
+      if (!m.active) continue;
+      if (rectsOverlap(pb, m.hitbox)) {
+        m.active = false;
+        if (player.takeDamage()) {
+          explosions.add(player.x, player.y, 'small');
+          if (player.lives <= 0) doGameOver();
+        }
+        break;
+      }
+    }
+  }
+
+  function checkPlayerBulletsVsGroundUnits() {
+    for (const b of bullets.playerBullets) {
+      if (!b.active) continue;
+      // Check against ground units
+      for (const u of groundMgr.units) {
+        if (rectsOverlap(b.hitbox, u.hitbox)) {
+          b.active = false;
+          const killed = u.hit(1);
+          if (killed) {
+            score += u.score;
+            explosions.add(u.x, u.y, 'big');
+            Audio.explosion(true);
+            if (Math.random() < 0.2) powerups.spawn(u.x, u.y);
+            addFloat(`+${u.score}`, u.x, u.y, '#0f0');
+          } else {
+            addFloat('-1', u.x, u.y - 10, '#8f8');
+          }
+          break;
+        }
+      }
+      if (!b.active) continue;
+      // Player bullets can also shoot down SAM missiles
+      for (const m of groundMgr.missiles) {
+        if (!m.active) continue;
+        if (rectsOverlap(b.hitbox, m.hitbox)) {
+          b.active = false;
+          m.active = false;
+          explosions.add(m.x, m.y, 'small');
+          addFloat('MISSILE DOWN', m.x, m.y, '#0ff');
+          break;
+        }
+      }
+    }
+  }
+
   function checkPlayerVsPowerups() {
     const pb = player.hitbox;
     for (const p of powerups.powerups) {
@@ -263,8 +325,10 @@ const Game = (() => {
   function finishLevelUp() {
     bullets.clear();
     enemies.clear();
+    groundMgr.clear();
     powerups.clear();
     enemies.setLevel(level);
+    groundMgr.setLevel(level);
     showScreen(null);
     setState(STATE.PLAYING);
   }
@@ -337,6 +401,7 @@ const Game = (() => {
       ctx.restore();
     }
 
+    groundMgr.draw(ctx);
     powerups.draw(ctx);
     enemies.draw(ctx);
     bullets.draw(ctx);

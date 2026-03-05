@@ -200,17 +200,19 @@ const WebGLFX = (() => {
     glCanvas.height = H;
     // Copy inline styles from the 2D canvas so CSS rules still apply to it
     glCanvas.style.cssText = canvas2D.style.cssText;
+    glCanvas.style.pointerEvents = 'none'; // let touches fall through to gameCanvas
     canvas2D.parentNode.insertBefore(glCanvas, canvas2D.nextSibling);
 
-    // Hide the 2D canvas (keep it in DOM for drawing, just not visible)
+    // Hide the 2D canvas visually but keep pointer events so touch input still works
     canvas2D.style.position = 'absolute';
-    canvas2D.style.visibility = 'hidden';
+    canvas2D.style.opacity = '0';
+    canvas2D.style.pointerEvents = 'auto';
 
     // Get WebGL context
     gl = glCanvas.getContext('webgl') || glCanvas.getContext('experimental-webgl');
     if (!gl) {
       console.warn('WebGLFX: WebGL not available – falling back to Canvas 2D.');
-      canvas2D.style.visibility = 'visible';
+      canvas2D.style.opacity = '1';
       glCanvas.remove();
       glCanvas = null;
       return;
@@ -224,7 +226,7 @@ const WebGLFX = (() => {
 
     if (!progExtract || !progBlurH || !progBlurV || !progComposite) {
       console.warn('WebGLFX: shader compilation failed – falling back to Canvas 2D.');
-      canvas2D.style.visibility = 'visible';
+      canvas2D.style.opacity = '1';
       glCanvas.remove();
       glCanvas = null;
       gl = null;

@@ -71,7 +71,7 @@ class Background {
 
   _spawnHCar() {
     // Spawn a car on a horizontal road entering from the top of the screen
-    const topRow = Math.floor(this.scrollY / this.ROW_H);
+    const topRow = Math.floor(-this.scrollY / this.ROW_H);
     const row    = topRow - randInt(0, 2);
     const isMaj  = row % this.MAJOR_H_EVERY === 0;
     const rW     = isMaj ? this.MAJOR_H_ROAD_W : this.H_ROAD_W;
@@ -104,19 +104,18 @@ class Background {
 
   // ── Update ────────────────────────────────────────────────────────────────
   update() {
-    this.scrollY += 1.0;
+    this.scrollY -= 1.0;
 
     // V-road cars
     for (const c of this.cars) {
       if (c.type === 'v') {
-        c.worldY += c.vy + 1.0; // own speed + terrain scroll
+        c.worldY += c.vy; // own speed (terrain scroll is now automatic via scrollY)
         const sy = c.worldY - this.scrollY;
         if (sy > CONFIG.HEIGHT + 20) c.worldY = this.scrollY - 20;
         if (sy < -20)                c.worldY = this.scrollY + CONFIG.HEIGHT + 20;
       } else {
-        // H-road cars scroll with terrain
-        c.x      += c.vx;
-        c.worldY += 1.0;
+        // H-road cars stay on their world-Y row; terrain scroll is automatic
+        c.x += c.vx;
         const sy  = c.worldY - this.scrollY;
         if (c.x > CONFIG.WIDTH + 20 || c.x < -20 || sy > CONFIG.HEIGHT + 20) {
           c.alive = false;
@@ -145,8 +144,8 @@ class Background {
     ctx.fillRect(0, 0, CONFIG.WIDTH, CONFIG.HEIGHT);
 
     // ── 2. City block rows (buildings + horizontal roads) ─────────────────────
-    const firstRow = Math.floor(this.scrollY / this.ROW_H) - 1;
-    const lastRow  = Math.ceil((this.scrollY + CONFIG.HEIGHT) / this.ROW_H) + 1;
+    const firstRow = Math.floor(-this.scrollY / this.ROW_H) - 1;
+    const lastRow  = Math.ceil((-this.scrollY + CONFIG.HEIGHT) / this.ROW_H) + 1;
 
     for (let row = firstRow; row <= lastRow; row++) {
       const sy      = row * this.ROW_H - this.scrollY;
@@ -179,7 +178,7 @@ class Background {
         ctx.strokeStyle = '#ccaa00';
         ctx.lineWidth = 1.5;
         ctx.setLineDash([14, 10]);
-        ctx.lineDashOffset = -(this.scrollY % 24);
+        ctx.lineDashOffset = this.scrollY % 24;
         ctx.beginPath();
         ctx.moveTo(0, sy + hRoadW / 2);
         ctx.lineTo(CONFIG.WIDTH, sy + hRoadW / 2);
@@ -206,7 +205,7 @@ class Background {
         ctx.strokeStyle = '#ccaa00';
         ctx.lineWidth = 1.5;
         ctx.setLineDash([14, 10]);
-        ctx.lineDashOffset = -(this.scrollY % 24);
+        ctx.lineDashOffset = this.scrollY % 24;
         ctx.beginPath();
         ctx.moveTo(road.x + road.w / 2, 0);
         ctx.lineTo(road.x + road.w / 2, CONFIG.HEIGHT);

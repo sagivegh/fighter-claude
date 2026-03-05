@@ -139,7 +139,7 @@ class Player {
     let dx = 0, dy = 0;
 
     if (Input.isTouchActive()) {
-      const delta = Input.getTouchMoveDelta(this.x, this.y);
+      const delta = Input.getTouchMoveDelta();
       dx = delta.dx;
       dy = delta.dy;
     } else {
@@ -232,110 +232,123 @@ class Player {
     const engineOn = this.engineFlicker < 4;
 
     // ── F-35 Lightning II — top-down silhouette ──────────────────────────────
-    // Fuselage (narrow diamond body)
-    ctx.fillStyle = '#7a8a7a'; // matte grey-green stealth coating
+    // Blended delta wing-body (one unified shape — F-35 has no distinct separate wings)
+    ctx.fillStyle = '#8c9482'; // stealth grey-green
     ctx.beginPath();
-    ctx.moveTo(x,      y - 22); // nose tip
-    ctx.lineTo(x + 4,  y - 14);
-    ctx.lineTo(x + 6,  y - 2);
-    ctx.lineTo(x + 7,  y + 12);
-    ctx.lineTo(x + 4,  y + 22); // tail right
-    ctx.lineTo(x,      y + 24); // tail centre
-    ctx.lineTo(x - 4,  y + 22); // tail left
-    ctx.lineTo(x - 7,  y + 12);
-    ctx.lineTo(x - 6,  y - 2);
-    ctx.lineTo(x - 4,  y - 14);
+    ctx.moveTo(x,      y - 22); // sharp nose
+    ctx.lineTo(x + 5,  y - 12); // chine right
+    ctx.lineTo(x + 26, y + 6);  // wingtip leading edge
+    ctx.lineTo(x + 22, y + 18); // wingtip trailing
+    ctx.lineTo(x + 7,  y + 22); // tail right shoulder
+    ctx.lineTo(x + 5,  y + 26); // tail right
+    ctx.lineTo(x,      y + 28); // tail centre
+    ctx.lineTo(x - 5,  y + 26); // tail left
+    ctx.lineTo(x - 7,  y + 22); // tail left shoulder
+    ctx.lineTo(x - 22, y + 18); // wingtip trailing
+    ctx.lineTo(x - 26, y + 6);  // wingtip leading edge
+    ctx.lineTo(x - 5,  y - 12); // chine left
     ctx.closePath();
     ctx.fill();
 
-    // Left delta wing
-    ctx.fillStyle = '#6a7a6a';
+    // Wing undersurface shading (slightly darker)
+    ctx.fillStyle = '#727a68';
     ctx.beginPath();
-    ctx.moveTo(x - 6,  y - 2);   // wing root leading edge
-    ctx.lineTo(x - 24, y + 8);   // wingtip
-    ctx.lineTo(x - 20, y + 20);  // wingtip trailing
-    ctx.lineTo(x - 7,  y + 12);  // wing root trailing
+    ctx.moveTo(x + 5,  y - 2);
+    ctx.lineTo(x + 26, y + 6);
+    ctx.lineTo(x + 22, y + 18);
+    ctx.lineTo(x + 8,  y + 20);
+    ctx.closePath();
+    ctx.fill();
+    ctx.beginPath();
+    ctx.moveTo(x - 5,  y - 2);
+    ctx.lineTo(x - 26, y + 6);
+    ctx.lineTo(x - 22, y + 18);
+    ctx.lineTo(x - 8,  y + 20);
     ctx.closePath();
     ctx.fill();
 
-    // Right delta wing
-    ctx.beginPath();
-    ctx.moveTo(x + 6,  y - 2);
-    ctx.lineTo(x + 24, y + 8);
-    ctx.lineTo(x + 20, y + 20);
-    ctx.lineTo(x + 7,  y + 12);
-    ctx.closePath();
-    ctx.fill();
-
-    // Angled tail fins (V-tail)
-    ctx.fillStyle = '#5a6a5a';
+    // Canted V-tail fins
+    ctx.fillStyle = '#606858';
     // Left fin
     ctx.beginPath();
-    ctx.moveTo(x - 4,  y + 14);
-    ctx.lineTo(x - 11, y + 18);
-    ctx.lineTo(x - 9,  y + 24);
-    ctx.lineTo(x - 4,  y + 22);
+    ctx.moveTo(x - 5,  y + 18);
+    ctx.lineTo(x - 13, y + 22);
+    ctx.lineTo(x - 10, y + 28);
+    ctx.lineTo(x - 5,  y + 26);
     ctx.closePath();
     ctx.fill();
     // Right fin
     ctx.beginPath();
-    ctx.moveTo(x + 4,  y + 14);
-    ctx.lineTo(x + 11, y + 18);
-    ctx.lineTo(x + 9,  y + 24);
-    ctx.lineTo(x + 4,  y + 22);
+    ctx.moveTo(x + 5,  y + 18);
+    ctx.lineTo(x + 13, y + 22);
+    ctx.lineTo(x + 10, y + 28);
+    ctx.lineTo(x + 5,  y + 26);
     ctx.closePath();
     ctx.fill();
 
-    // Canopy (dark tinted)
-    ctx.fillStyle = '#2a4a6a';
+    // DSI inlet bump (left side of fuselage)
+    ctx.fillStyle = '#6e766a';
     ctx.beginPath();
-    ctx.ellipse(x, y - 10, 3, 7, 0, 0, Math.PI * 2);
+    ctx.ellipse(x - 5, y + 2, 3, 5, 0, 0, Math.PI * 2);
     ctx.fill();
 
-    // Panel lines (stealth faceting detail)
-    ctx.strokeStyle = 'rgba(0,0,0,0.25)';
-    ctx.lineWidth = 0.8;
+    // Panel / seam lines (stealth facet borders)
+    ctx.strokeStyle = 'rgba(0,0,0,0.3)';
+    ctx.lineWidth = 0.7;
     ctx.beginPath();
-    ctx.moveTo(x, y - 22); ctx.lineTo(x - 6, y - 2);
-    ctx.moveTo(x, y - 22); ctx.lineTo(x + 6, y - 2);
-    ctx.moveTo(x - 6, y - 2); ctx.lineTo(x - 7, y + 12);
-    ctx.moveTo(x + 6, y - 2); ctx.lineTo(x + 7, y + 12);
+    // Nose chines
+    ctx.moveTo(x, y - 22); ctx.lineTo(x + 5, y - 12);
+    ctx.moveTo(x, y - 22); ctx.lineTo(x - 5, y - 12);
+    // Mid-body panel
+    ctx.moveTo(x + 5, y - 12); ctx.lineTo(x + 8, y + 12);
+    ctx.moveTo(x - 5, y - 12); ctx.lineTo(x - 8, y + 12);
+    // Wing fold line
+    ctx.moveTo(x + 8, y + 4); ctx.lineTo(x + 22, y + 18);
+    ctx.moveTo(x - 8, y + 4); ctx.lineTo(x - 22, y + 18);
     ctx.stroke();
 
-    // Engine exhaust nozzle
-    ctx.fillStyle = '#3a3a3a';
+    // Canopy (dark tinted bubble)
+    ctx.fillStyle = '#1e3a52';
     ctx.beginPath();
-    ctx.ellipse(x, y + 23, 4, 3, 0, 0, Math.PI * 2);
+    ctx.ellipse(x, y - 10, 3.5, 8, 0, 0, Math.PI * 2);
+    ctx.fill();
+    // Canopy highlight
+    ctx.fillStyle = 'rgba(150,200,255,0.2)';
+    ctx.beginPath();
+    ctx.ellipse(x - 0.5, y - 12, 1.5, 4, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Engine exhaust nozzle
+    ctx.fillStyle = '#2a2a2a';
+    ctx.beginPath();
+    ctx.ellipse(x, y + 27, 5, 4, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#444';
+    ctx.beginPath();
+    ctx.ellipse(x, y + 27, 3, 2.5, 0, 0, Math.PI * 2);
     ctx.fill();
 
     // Engine flame (afterburner)
     if (engineOn) {
       const flameH = randInt(10, 18);
-      ctx.shadowColor = '#f80';
-      ctx.shadowBlur = 14;
-      const grad = ctx.createLinearGradient(x, y + 24, x, y + 24 + flameH);
+      const grad = ctx.createLinearGradient(x, y + 28, x, y + 28 + flameH);
       grad.addColorStop(0,   '#fff');
       grad.addColorStop(0.3, '#f80');
       grad.addColorStop(0.7, '#f40');
       grad.addColorStop(1,   'transparent');
       ctx.fillStyle = grad;
       ctx.beginPath();
-      ctx.ellipse(x, y + 26, 4, flameH / 2, 0, 0, Math.PI * 2);
+      ctx.ellipse(x, y + 30, 4, flameH / 2, 0, 0, Math.PI * 2);
       ctx.fill();
-      ctx.shadowBlur = 0;
     }
 
     // Weapon type glow accent
     if (this.weaponType === 'spread') {
       ctx.fillStyle = '#0f8';
-      ctx.shadowColor = '#0f8';
-      ctx.shadowBlur = 6;
       ctx.fillRect(x - 25, y + 6, 3, 5);
       ctx.fillRect(x + 22, y + 6, 3, 5);
     } else if (this.weaponType === 'laser') {
       ctx.fillStyle = '#f4f';
-      ctx.shadowColor = '#f4f';
-      ctx.shadowBlur = 10;
       ctx.beginPath();
       ctx.arc(x, y - 22, 3, 0, Math.PI * 2);
       ctx.fill();
@@ -350,8 +363,6 @@ class Player {
     ctx.globalAlpha = pulse * 0.4;
     ctx.strokeStyle = '#0f8';
     ctx.lineWidth = 3;
-    ctx.shadowColor = '#0f8';
-    ctx.shadowBlur = 15;
     ctx.beginPath();
     ctx.ellipse(x, y, 34, 36, 0, 0, Math.PI * 2);
     ctx.stroke();

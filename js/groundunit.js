@@ -92,10 +92,10 @@ class SAMissile {
     ctx.translate(this.x, this.y);
     ctx.rotate(this.angle + Math.PI / 2);
     // Body
-    ctx.fillStyle = '#ddd';
+    ctx.fillStyle = '#888';
     ctx.fillRect(-2, -8, 4, 14);
     // Pointed nose
-    ctx.fillStyle = '#fff';
+    ctx.fillStyle = '#aaa';
     ctx.beginPath();
     ctx.moveTo(-2, -8);
     ctx.lineTo(0,  -14);
@@ -103,12 +103,10 @@ class SAMissile {
     ctx.closePath();
     ctx.fill();
     // Fins
-    ctx.fillStyle = '#aaa';
+    ctx.fillStyle = '#666';
     ctx.fillRect(-4, 4, 2, 5);
     ctx.fillRect(2,  4, 2, 5);
     // Exhaust glow
-    ctx.shadowColor = this.color;
-    ctx.shadowBlur = 10;
     ctx.fillStyle = this.color;
     ctx.beginPath();
     ctx.arc(0, 7, 3.5, 0, Math.PI * 2);

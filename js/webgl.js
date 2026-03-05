@@ -33,7 +33,7 @@ const WebGLFX = (() => {
     void main() {
       vec4 c = texture2D(uTex, vUV);
       float lum = dot(c.rgb, vec3(0.2126, 0.7152, 0.0722));
-      float bright = smoothstep(0.50, 0.70, lum);
+      float bright = smoothstep(0.85, 1.00, lum);
       gl_FragColor = vec4(c.rgb * bright, 1.0);
     }
   `;
@@ -80,7 +80,7 @@ const WebGLFX = (() => {
       vec3 game  = vec3(colR.r, colG.g, colB.b);
 
       // Add bloom
-      vec3 bloom = texture2D(uBloom, vUV).rgb * 0.85;
+      vec3 bloom = texture2D(uBloom, vUV).rgb * 0.40;
       vec3 col = game + bloom;
 
       // CRT scanlines: darken every other pixel row

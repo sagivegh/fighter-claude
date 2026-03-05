@@ -43,12 +43,8 @@ class Bullet {
     const x = this.x, y = this.y;
     const color = this.color || '#4af';
 
-    // Glow
-    ctx.save();
-    ctx.shadowColor = color;
-    ctx.shadowBlur = 8;
-
     // Core
+    ctx.save();
     const grad = ctx.createLinearGradient(x, y - this.h / 2, x, y + this.h / 2);
     grad.addColorStop(0, '#fff');
     grad.addColorStop(0.3, color);
@@ -65,8 +61,6 @@ class Bullet {
     const color = this.color || '#f44';
 
     ctx.save();
-    ctx.shadowColor = color;
-    ctx.shadowBlur = 6;
 
     const grad = ctx.createRadialGradient(x, y, 0, x, y, this.w);
     grad.addColorStop(0, '#fff');

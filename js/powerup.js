@@ -57,10 +57,6 @@ class Powerup {
     ctx.save();
     ctx.globalAlpha = alphaFade;
 
-    // Outer glow
-    ctx.shadowColor = color;
-    ctx.shadowBlur = 12;
-
     // Rotating diamond shape
     ctx.save();
     ctx.translate(x, y);
@@ -81,7 +77,6 @@ class Powerup {
     ctx.restore();
 
     // Label
-    ctx.shadowBlur = 0;
     ctx.fillStyle = color;
     ctx.font = `bold ${s}px Courier New`;
     ctx.textAlign = 'center';

@@ -159,6 +159,10 @@ body {
   display: none;
 }
 
+.hidden {
+  display: none !important;
+}
+
 .game-title {
   font-size: 56px;
   font-weight: 900;
@@ -242,6 +246,52 @@ h2 {
   animation: pulse 1.5s infinite;
 }
 
+/* Joystick */
+#joystick-zone {
+  position: absolute;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 100px);
+  left: 0;
+  width: 160px; height: 160px;
+  z-index: 15;
+  touch-action: none;
+}
+
+#joystick-zone.hidden {
+  display: none;
+}
+
+/* Permanent ghost ring so player knows where to touch */
+#joystick-zone::after {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 110px; height: 110px;
+  border-radius: 50%;
+  border: 2px dashed rgba(255,255,255,0.18);
+  pointer-events: none;
+}
+
+#joystick-base {
+  position: absolute;
+  width: 110px; height: 110px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.10);
+  border: 2px solid rgba(255,255,255,0.40);
+  display: none;
+  /* centred by JS */
+}
+
+#joystick-knob {
+  position: absolute;
+  width: 46px; height: 46px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.45);
+  border: 2px solid rgba(255,255,255,0.8);
+  top: 50%; left: 50%;
+  transform: translate(-50%,-50%);
+}
+
 /* Touch buttons */
 .touch-btn {
   position: absolute;
@@ -271,7 +321,7 @@ h2 {
 }
 
 #touch-bomb-btn {
-  bottom: 24px;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 100px);
   right: 24px;
   width: 70px;
   height: 70px;
@@ -316,7 +366,7 @@ h2 {
   /* Bigger HUD text on small screens */
   #score, #hiscore, #level { font-size: 16px; }
 
-  /* Shift weapon/power display up to not overlap bomb button */
-  #weapon-display { bottom: 110px; }
-  #power-display  { bottom: 110px; }
+  /* Shift weapon/power display up to not overlap joystick/bomb button */
+  #weapon-display { bottom: 170px; }
+  #power-display  { bottom: 170px; }
 }

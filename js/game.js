@@ -24,6 +24,7 @@ const Game = (() => {
     canvas.height = CONFIG.HEIGHT;
 
     Audio.init();
+    WebGLFX.init(canvas);
 
     bg         = new Background();
     player     = new Player();
@@ -77,6 +78,7 @@ const Game = (() => {
 
     update(dt);
     draw();
+    WebGLFX.render(ts);
     Input.clearFrame();
     requestAnimationFrame(loop);
   }

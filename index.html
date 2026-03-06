@@ -44,6 +44,7 @@
         <p>Enemies: F-4 · Su-24 · Su-25 · MiG-29 · F-14 · F-5 · Yak-130</p>
       </div>
       <button id="start-btn" class="btn-primary">PRESS ENTER TO START</button>
+      <button id="airdefense-btn" class="btn-secondary">🛡 AIR DEFENSE COMMAND</button>
       <p class="touch-hint">Tap to start on mobile</p>
     </div>
 
@@ -65,6 +66,23 @@
     <div id="levelup-screen" class="screen hidden">
       <h2 id="levelup-text">LEVEL 2</h2>
       <p id="levelup-sub">Get Ready!</p>
+    </div>
+
+    <!-- Air Defense Overlay -->
+    <div id="airdefense-overlay" class="hidden">
+      <canvas id="adCanvas" width="480" height="720"></canvas>
+      <div id="ad-mode-screen">
+        <h2 class="ad-title">AIR DEFENSE<br>COMMAND</h2>
+        <p class="ad-subtitle">Multi-layer ballistic missile defense</p>
+        <div class="ad-mode-info">
+          <p>🛡 Select intercept systems — Arrow / David's Sling / Iron Dome</p>
+          <p>💰 Manage budget — don't waste missiles on open-area impacts</p>
+          <p>🎯 Click a threat on the map, then choose your system</p>
+        </div>
+        <button id="ad-campaign-btn" class="btn-primary">CAMPAIGN MODE</button>
+        <button id="ad-survival-btn" class="btn-primary">SURVIVAL MODE</button>
+        <button id="ad-back-btn" class="btn-secondary">← BACK TO MENU</button>
+      </div>
     </div>
 
     <!-- Joystick -->
@@ -110,6 +128,7 @@
   <script src="js/enemy.js"></script>
   <script src="js/groundunit.js"></script>
   <script src="js/webgl.js"></script>
+  <script src="js/airdefense.js"></script>
   <script src="js/game.js"></script>
 </body>
 </html>

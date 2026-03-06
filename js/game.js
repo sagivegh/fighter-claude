@@ -46,10 +46,35 @@ const Game = (() => {
     document.getElementById('restart-btn').addEventListener('click', startGame);
     document.getElementById('resume-btn').addEventListener('click', () => setState(STATE.PLAYING));
 
+    // Air Defense mini-game
+    document.getElementById('airdefense-btn').addEventListener('click', openAirDefenseMenu);
+    document.getElementById('ad-campaign-btn').addEventListener('click', () => launchAirDefense('campaign'));
+    document.getElementById('ad-survival-btn').addEventListener('click', () => launchAirDefense('survival'));
+    document.getElementById('ad-back-btn').addEventListener('click', closeAirDefense);
+
     // Keyboard start
     document.addEventListener('keydown', (e) => {
       if (e.code === 'Enter' && state === STATE.START) startGame();
+      if (e.code === 'Escape') closeAirDefense();
     });
+  }
+
+  function openAirDefenseMenu() {
+    document.getElementById('airdefense-overlay').classList.remove('hidden');
+    document.getElementById('ad-mode-screen').style.display = 'flex';
+    AirDefense.init(document.getElementById('adCanvas'));
+    AirDefense._onExit = closeAirDefense;
+  }
+
+  function launchAirDefense(mode) {
+    document.getElementById('ad-mode-screen').style.display = 'none';
+    AirDefense.startGame(mode);
+  }
+
+  function closeAirDefense() {
+    AirDefense.destroy();
+    document.getElementById('airdefense-overlay').classList.add('hidden');
+    document.getElementById('ad-mode-screen').style.display = 'flex';
   }
 
   function startGame() {

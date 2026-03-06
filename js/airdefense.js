@@ -17,22 +17,33 @@ const AirDefense = (() => {
   const PANEL_Y = 500;
   const PANEL_H = 220;
 
-  // Origin countries [x, y] in map pixels
+  // ── Geographic projection ────────────────────────────────────────────────────
+  // Mercator-lite: lon [30,62] → x [0,480],  lat [12,40] → y [0,500]
+  const GEO = { lon0:30, lon1:62, lat0:12, lat1:40 };
+  function px(lat, lon) {
+    return [
+      (lon - GEO.lon0) / (GEO.lon1 - GEO.lon0) * 480,
+      (GEO.lat1 - lat) / (GEO.lat1 - GEO.lat0) * MAP_H,
+    ];
+  }
+
+  // Origin countries — real geographic positions
   const ORIGINS = [
-    { id:'lebanon', name:'LEBANON', x:155, y:130, color:'#f44', types:['cruise','rocket'] },
-    { id:'syria',   name:'SYRIA',   x:225, y:118, color:'#f84', types:['ballistic','cruise'] },
-    { id:'iraq',    name:'IRAQ',    x:305, y:158, color:'#fa4', types:['ballistic'] },
-    { id:'iran',    name:'IRAN',    x:400, y:135, color:'#f22', types:['ballistic'] },
-    { id:'yemen',   name:'YEMEN',   x:320, y:345, color:'#f64', types:['ballistic','drone'] },
-    { id:'gaza',    name:'GAZA',    x:118, y:250, color:'#fa2', types:['rocket','drone'] },
+    { id:'lebanon', name:'LEBANON', ...pxObj(33.89, 35.50), color:'#f44', types:['cruise','rocket'] },
+    { id:'syria',   name:'SYRIA',   ...pxObj(33.51, 36.29), color:'#f84', types:['ballistic','cruise'] },
+    { id:'iraq',    name:'IRAQ',    ...pxObj(33.34, 44.40), color:'#fa4', types:['ballistic'] },
+    { id:'iran',    name:'IRAN',    ...pxObj(35.69, 51.39), color:'#f22', types:['ballistic'] },
+    { id:'yemen',   name:'YEMEN',   ...pxObj(15.37, 44.19), color:'#f64', types:['ballistic','drone'] },
+    { id:'gaza',    name:'GAZA',    ...pxObj(31.50, 34.47), color:'#fa2', types:['rocket','drone'] },
   ];
+  function pxObj(lat, lon) { const [x,y] = px(lat,lon); return {x,y}; }
 
   const CITY_DEFS = [
-    { name:'HAIFA',       x:148, y:195, maxHp:3 },
-    { name:'TEL AVIV',    x:142, y:233, maxHp:4 },
-    { name:'JERUSALEM',   x:158, y:248, maxHp:4 },
-    { name:"BE'ER SHEVA", x:146, y:272, maxHp:3 },
-    { name:'EILAT',       x:150, y:342, maxHp:2 },
+    { name:'HAIFA',       ...pxObj(32.82, 34.99), maxHp:3 },
+    { name:'TEL AVIV',    ...pxObj(32.08, 34.78), maxHp:4 },
+    { name:'JERUSALEM',   ...pxObj(31.78, 35.23), maxHp:4 },
+    { name:"BE'ER SHEVA", ...pxObj(31.25, 34.79), maxHp:3 },
+    { name:'EILAT',       ...pxObj(29.56, 34.95), maxHp:2 },
   ];
 
   // Defense systems
@@ -324,7 +335,7 @@ const AirDefense = (() => {
     budget -= sys.cost;
     interceptors.push({
       active: true, missileId, sys, sysKey,
-      startPos: { x: 148, y: 240 },
+      startPos: { x: px(31.5,35.1)[0], y: px(31.5,35.1)[1] },
       elapsed: 0, t: 0,
     });
     addMessage(`◆ ${sys.name} LAUNCHED → M-${String(missileId).padStart(3,'0')}`, sys.color);
@@ -458,7 +469,7 @@ const AirDefense = (() => {
     }
 
     // Radar sweep centred on Israel
-    const cx = 148, cy = 240;
+    const [cx, cy] = px(31.5, 35.1);
     const ang = (tick * 0.6) % (Math.PI * 2);
     ctx.save();
     ctx.translate(cx, cy);
@@ -480,69 +491,149 @@ const AirDefense = (() => {
     ctx.beginPath(); ctx.moveTo(0, PANEL_Y); ctx.lineTo(480, PANEL_Y); ctx.stroke();
   }
 
-  function poly(pts, fill, stroke, lw = 1) {
+  // Draw a country polygon from [[lat,lon],...] pairs
+  function geoPoly(latLons, fill, stroke, lw = 0.8) {
     ctx.fillStyle   = fill;
     ctx.strokeStyle = stroke;
     ctx.lineWidth   = lw;
     ctx.beginPath();
-    ctx.moveTo(pts[0][0], pts[0][1]);
-    for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i][0], pts[i][1]);
+    for (let i = 0; i < latLons.length; i++) {
+      const [x, y] = px(latLons[i][0], latLons[i][1]);
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
     ctx.closePath();
     ctx.fill();
     ctx.stroke();
   }
 
+  // ── Real geo-projected country outlines ──────────────────────────────────────
+  // All coordinates are [lat°N, lon°E]  (simplified but geographically accurate)
+
+  // Turkey (southern portion visible in map extent lat≤40)
+  const C_TURKEY = [
+    [40,30],[40,44.8],[37.4,44.8],[37.2,41.3],[36.8,38.8],[36.6,36.2],
+    [36.1,35.9],[36.6,35.5],[36.2,33.9],[36.0,32.5],[36.5,30],[40,30],
+  ];
+  // Cyprus
+  const C_CYPRUS = [
+    [35.7,32.3],[34.6,32.3],[34.5,33.3],[34.7,34.6],[35.2,34.6],[35.7,33.5],[35.7,32.3],
+  ];
+  // Egypt (NE corner + Sinai peninsula)
+  const C_EGYPT = [
+    [31.5,30],[31.5,32.5],[31.2,32.6],[31.1,34.2],[30.1,34.2],
+    [29.5,34.9],[28.0,34.0],[22.0,37.1],[22.0,30],[31.5,30],
+  ];
+  // Sudan / Eritrea (fills lower-left)
+  const C_SUDAN = [
+    [22,30],[22,37.1],[18,37.1],[12,43],[12,30],[22,30],
+  ];
+  // Saudi Arabia
+  const C_SAUDI = [
+    [29.5,35.0],[29.2,38.7],[30.0,42.5],[29.1,46.5],[28.5,50.0],
+    [27.0,52.0],[26.5,56.3],[22.0,59.0],[18.0,55.0],[18.0,42.5],
+    [15.0,43.0],[12.6,44.0],[12.0,43.5],[16.0,37.0],[22.0,37.0],
+    [28.0,34.0],[29.5,34.9],[29.5,35.0],
+  ];
+  // Yemen
+  const C_YEMEN = [
+    [18.0,42.5],[15.0,43.0],[12.6,44.0],[12.0,45.5],[13.0,48.0],
+    [15.5,50.5],[18.0,55.0],[18.0,42.5],
+  ];
+  // Oman / UAE (simplified, fills SE corner)
+  const C_OMAN = [
+    [26.5,56.3],[24.5,54.5],[23.5,51.5],[22.0,59.0],[25.1,61.0],
+    [31.0,62.0],[31.0,61.5],[26.5,56.3],
+  ];
+  // Iran
+  const C_IRAN = [
+    [37.4,44.8],[38.5,48.5],[37.5,50.0],[36.8,54.0],[36.0,60.0],
+    [31.0,61.5],[25.1,61.0],[22.0,59.0],[26.5,56.3],[27.0,52.0],
+    [28.5,50.0],[30.0,48.5],[33.6,46.1],[35.1,45.7],[37.4,44.8],
+  ];
+  // Kuwait (small, between Iraq and Saudi)
+  const C_KUWAIT = [
+    [30.1,48.0],[29.1,48.0],[29.1,46.5],[29.5,46.5],[30.1,47.7],[30.1,48.0],
+  ];
+  // Iraq
+  const C_IRAQ = [
+    [37.0,42.4],[37.4,44.8],[35.1,45.7],[33.6,46.1],[30.0,48.0],
+    [29.1,48.0],[29.1,46.5],[30.0,42.5],[29.2,38.7],[33.4,38.8],
+    [33.8,40.7],[36.8,38.8],[37.0,42.4],
+  ];
+  // Syria
+  const C_SYRIA = [
+    [37.0,42.4],[37.2,41.3],[36.8,38.8],[33.8,40.7],[33.4,38.8],
+    [32.3,36.8],[32.7,35.8],[33.1,35.7],[33.3,35.6],[33.7,36.0],
+    [34.7,36.6],[36.6,36.2],[36.8,38.8],[37.0,42.4],
+  ];
+  // Jordan
+  const C_JORDAN = [
+    [32.7,35.8],[33.4,38.8],[29.2,38.7],[29.5,35.0],[29.6,35.0],
+    [30.0,35.0],[31.1,35.4],[31.5,35.5],[31.9,35.5],[32.6,35.6],[32.7,35.8],
+  ];
+  // Lebanon
+  const C_LEBANON = [
+    [33.1,35.1],[33.3,35.6],[33.7,36.0],[34.7,36.6],
+    [34.5,36.0],[34.2,35.7],[33.7,35.6],[33.1,35.1],
+  ];
+  // Israel (outlined brighter)
+  const C_ISRAEL = [
+    [33.3,35.6],[33.1,35.7],[32.7,35.8],[32.6,35.6],[31.9,35.5],
+    [31.5,35.5],[31.1,35.4],[30.0,35.0],[29.6,35.0],[29.5,34.8],
+    [30.3,34.5],[31.2,34.2],[31.6,34.5],[32.1,34.8],[32.5,34.9],
+    [32.8,35.0],[33.1,35.1],[33.3,35.6],
+  ];
+  // Gaza Strip
+  const C_GAZA = [[31.6,34.5],[31.2,34.2],[31.2,34.5],[31.6,34.5]];
+
   function drawMapRegions() {
     ctx.save();
 
-    // Mediterranean Sea
-    poly([[0,95],[148,138],[140,200],[128,258],[118,248],[104,200],[60,158],[0,148]],
-      'rgba(0,25,70,0.55)', 'rgba(0,60,120,0.3)');
+    // 1. Sea base (fill entire map area with ocean colour)
+    ctx.fillStyle = 'rgba(0,18,55,0.70)';
+    ctx.fillRect(0, 0, 480, MAP_H);
 
-    // Egypt
-    poly([[50,195],[140,198],[133,280],[128,342],[105,410],[50,410]],
-      'rgba(80,65,15,0.28)', 'rgba(110,90,30,0.25)');
+    // 2. Land masses (back to front)
+    const LAND  = 'rgba(52,42,18,0.80)';
+    const LBORD = 'rgba(80,65,30,0.55)';
+    geoPoly(C_SUDAN,  LAND, LBORD);
+    geoPoly(C_EGYPT,  LAND, LBORD);
+    geoPoly(C_TURKEY, 'rgba(55,48,22,0.80)', 'rgba(88,75,35,0.55)');
+    geoPoly(C_CYPRUS, LAND, LBORD);
+    geoPoly(C_SAUDI,  'rgba(70,55,15,0.80)', 'rgba(105,82,28,0.55)');
+    geoPoly(C_YEMEN,  'rgba(90,55,10,0.82)', 'rgba(120,75,20,0.60)');
+    geoPoly(C_OMAN,   LAND, LBORD);
+    geoPoly(C_IRAN,   'rgba(90,15,10,0.82)', 'rgba(130,28,18,0.55)');
+    geoPoly(C_KUWAIT, LAND, LBORD);
+    geoPoly(C_IRAQ,   'rgba(72,48,8,0.82)',  'rgba(105,72,18,0.60)');
+    geoPoly(C_SYRIA,  'rgba(62,40,8,0.82)',  'rgba(95,65,20,0.60)');
+    geoPoly(C_JORDAN, LAND, LBORD);
+    geoPoly(C_LEBANON,'rgba(68,38,10,0.82)', 'rgba(100,60,22,0.60)');
 
-    // Lebanon
-    poly([[148,138],[192,132],[204,168],[172,192],[148,190]],
-      'rgba(60,35,10,0.32)', 'rgba(100,70,30,0.28)');
+    // Gaza (highlighted hostile)
+    geoPoly(C_GAZA, 'rgba(180,60,0,0.40)', 'rgba(255,100,0,0.65)', 1.2);
 
-    // Syria
-    poly([[192,100],[310,88],[328,162],[215,182],[204,168],[192,132]],
-      'rgba(55,35,8,0.32)', 'rgba(90,65,25,0.28)');
+    // Israel (bright distinctive highlight)
+    geoPoly(C_ISRAEL, 'rgba(0,130,60,0.32)', 'rgba(0,255,90,0.70)', 1.5);
 
-    // Jordan
-    poly([[172,215],[268,185],[295,295],[256,368],[175,332],[163,285],[172,260]],
-      'rgba(70,50,15,0.30)', 'rgba(100,75,30,0.25)');
-
-    // Iraq
-    poly([[265,132],[430,88],[448,210],[390,295],[295,295],[268,185],[215,182],[310,88]],
-      'rgba(60,42,8,0.30)', 'rgba(95,70,25,0.25)');
-
-    // Iran
-    poly([[390,72],[480,62],[480,260],[425,268],[385,205],[382,128]],
-      'rgba(100,18,8,0.30)', 'rgba(140,35,20,0.28)');
-
-    // Saudi Arabia / Gulf region
-    poly([[175,332],[256,368],[330,410],[400,380],[440,310],[390,295],[295,295]],
-      'rgba(75,58,18,0.25)', 'rgba(100,80,30,0.20)');
-
-    // Yemen
-    poly([[285,360],[440,342],[465,425],[305,445],[265,402]],
-      'rgba(115,45,0,0.28)', 'rgba(150,65,10,0.25)');
-
-    // Gaza Strip
-    ctx.fillStyle   = 'rgba(200,70,0,0.25)';
-    ctx.strokeStyle = 'rgba(255,110,0,0.50)';
-    ctx.lineWidth   = 1;
-    ctx.strokeRect(118, 248, 14, 27);
-    ctx.fillRect(118, 248, 14, 27);
-
-    // Israel (bright green highlight)
-    poly([
-      [148,188],[170,192],[178,214],[175,260],[165,286],[155,352],
-      [140,342],[132,282],[127,256],[132,228],[138,198]
-    ], 'rgba(0,140,70,0.28)', 'rgba(0,255,100,0.65)', 1.5);
+    // 3. Country name labels at geo-projected positions
+    ctx.font      = '7px Courier New';
+    ctx.textAlign = 'center';
+    const labels = [
+      { t:'TURKEY',       lat:37.5, lon:37.0, c:'rgba(180,160,80,0.7)'  },
+      { t:'SYRIA',        lat:34.8, lon:38.5, c:'rgba(200,140,60,0.75)' },
+      { t:'IRAQ',         lat:33.0, lon:43.5, c:'rgba(190,150,40,0.75)' },
+      { t:'IRAN',         lat:32.0, lon:53.5, c:'rgba(220,60,50,0.75)'  },
+      { t:'SAUDI ARABIA', lat:24.0, lon:44.0, c:'rgba(170,140,50,0.65)' },
+      { t:'YEMEN',        lat:15.5, lon:47.0, c:'rgba(200,110,30,0.70)' },
+      { t:'JORDAN',       lat:30.5, lon:36.5, c:'rgba(160,130,50,0.70)' },
+      { t:'EGYPT',        lat:27.0, lon:31.5, c:'rgba(160,130,40,0.65)' },
+    ];
+    for (const lb of labels) {
+      const [lx, ly] = px(lb.lat, lb.lon);
+      ctx.fillStyle = lb.c;
+      ctx.fillText(lb.t, lx, ly);
+    }
 
     ctx.restore();
   }

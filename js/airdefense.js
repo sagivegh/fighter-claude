@@ -11,6 +11,8 @@ const AirDefense = (() => {
   let gameOver, gameWon;
   let waveSpawnList, waveSpawnTimer, betweenWaves, betweenTimer;
   let lastTs;
+  let lastRadarAngle = 0;
+  let budgetWarned = false;
 
   // ── Map layout ──────────────────────────────────────────────────────────────
   const MAP_H   = 500;   // map occupies top 500 px of 720
@@ -128,6 +130,7 @@ const AirDefense = (() => {
 
   // ── Start game ───────────────────────────────────────────────────────────────
   function startGame(mode) {
+    Audio.resume();
     gameMode      = mode;
     budget        = 2000;
     score         = 0;
@@ -175,6 +178,18 @@ const AirDefense = (() => {
 
     updateWaveSpawns(dt);
 
+    // Radar ping on each sweep completion
+    const radarAngle = (tick * 0.6) % (Math.PI * 2);
+    if (radarAngle < lastRadarAngle) Audio.adRadarPing();
+    lastRadarAngle = radarAngle;
+
+    // Budget warning once when low
+    if (budget < 200 && !budgetWarned) {
+      budgetWarned = true;
+      Audio.adBudgetWarning();
+    }
+    if (budget >= 200) budgetWarned = false;
+
     // Missiles
     for (const m of missiles) {
       if (!m.active) continue;
@@ -215,6 +230,7 @@ const AirDefense = (() => {
     }
     waveSpawnList = defs.map(e => ({ ...e, spawned: false }));
     addMessage(`◆ WAVE ${waveNum} INCOMING — STAND BY`, '#f84');
+    Audio.adWaveAlert();
   }
 
   function generateSurvivalWave(waveNum) {
@@ -249,11 +265,13 @@ const AirDefense = (() => {
     if (gameMode === 'campaign' && wave >= CAMPAIGN_WAVES.length) {
       gameWon = true;
       addMessage('◆ ALL THREATS NEUTRALIZED — MISSION ACCOMPLISHED!', '#4f4');
+      Audio.adVictory();
       return;
     }
 
     score += wave * 500;
     addMessage(`◆ WAVE ${wave} CLEAR! BONUS +${wave * 500}`, '#4f4');
+    Audio.adWaveClear();
     wave++;
     waveSpawnList = null;
     betweenWaves  = true;
@@ -265,6 +283,7 @@ const AirDefense = (() => {
     if (dead >= cities.length) {
       gameOver = true;
       addMessage('◆ ALL CITIES DESTROYED — MISSION FAILED', '#f44');
+      Audio.adDefeat();
     }
   }
 
@@ -285,6 +304,7 @@ const AirDefense = (() => {
       intercepted: false,
     });
     addMessage(`◆ THREAT DETECTED: ${def.label} FROM ${origin.name}`, def.color);
+    Audio.adThreatDetected();
   }
 
   function getPhase(m) {
@@ -314,8 +334,10 @@ const AirDefense = (() => {
     if (city && city.hp > 0) {
       city.hp = Math.max(0, city.hp - m.def.damage);
       addMessage(`◆ IMPACT ON ${city.name}! HP: ${city.hp}/${city.maxHp}`, '#f44');
+      Audio.adCityImpact();
     } else {
       addMessage('◆ IMPACT IN OPEN AREA — NO DAMAGE', '#888');
+      Audio.adOpenImpact();
     }
   }
 
@@ -339,6 +361,7 @@ const AirDefense = (() => {
       elapsed: 0, t: 0,
     });
     addMessage(`◆ ${sys.name} LAUNCHED → M-${String(missileId).padStart(3,'0')}`, sys.color);
+    Audio.adLaunch(sysKey);
     selectedId = null;
   }
 
@@ -354,8 +377,10 @@ const AirDefense = (() => {
       blasts.push({ x: pos.x, y: pos.y, life: 1.8, maxLife: 1.8, color: iv.sys.color, r: 10 });
       score += m.def.score;
       addMessage(`◆ INTERCEPT CONFIRMED — +${m.def.score} PTS`, '#4f4');
+      Audio.adIntercept();
     } else {
       addMessage(`◆ ${iv.sys.name} MISSED! MISSILE CONTINUING`, '#f44');
+      Audio.adMiss();
     }
   }
 

@@ -509,48 +509,53 @@ const AirDefense = (() => {
   // ── Real geo-projected country outlines ──────────────────────────────────────
   // All coordinates are [lat°N, lon°E]  (simplified but geographically accurate)
 
-  // Turkey (southern portion visible in map extent lat≤40)
+  // Turkey (southern portion visible lat≤40)
   const C_TURKEY = [
-    [40,30],[40,44.8],[37.4,44.8],[37.2,41.3],[36.8,38.8],[36.6,36.2],
-    [36.1,35.9],[36.6,35.5],[36.2,33.9],[36.0,32.5],[36.5,30],[40,30],
+    [40,30],[40,44.8],[37.4,44.8],[37.2,41.3],[36.8,38.8],
+    [36.5,36.2],[36.1,35.9],[36.6,35.5],[36.2,33.9],[36.0,32.5],[36.5,30],[40,30],
   ];
   // Cyprus
   const C_CYPRUS = [
     [35.7,32.3],[34.6,32.3],[34.5,33.3],[34.7,34.6],[35.2,34.6],[35.7,33.5],[35.7,32.3],
   ];
-  // Egypt (NE corner + Sinai peninsula)
+  // Egypt — includes Sinai, Red Sea coast on east side (creates Red Sea gap vs Saudi)
   const C_EGYPT = [
-    [31.5,30],[31.5,32.5],[31.2,32.6],[31.1,34.2],[30.1,34.2],
-    [29.5,34.9],[28.0,34.0],[22.0,37.1],[22.0,30],[31.5,30],
+    [31.5,30.0],[31.5,32.2],[30.9,32.4],         // Med coast → Suez Canal
+    [31.1,34.2],[29.5,34.9],[27.8,34.5],          // Sinai (Rafah → Eilat → Sharm)
+    [25.0,35.5],[23.5,36.5],[22.0,37.0],          // Red Sea coast going south
+    [22.0,30.0],[31.5,30.0],                       // W border
   ];
-  // Sudan / Eritrea (fills lower-left)
+  // Sudan / Eritrea — traces Red Sea W coast
   const C_SUDAN = [
-    [22,30],[22,37.1],[18,37.1],[12,43],[12,30],[22,30],
+    [22.0,30.0],[22.0,37.0],[19.6,37.2],[15.0,41.5],[12.0,43.5],[12.0,30.0],[22.0,30.0],
   ];
-  // Saudi Arabia
+  // Saudi Arabia — proper Red Sea coast on west side, Gulf coast on east
   const C_SAUDI = [
-    [29.5,35.0],[29.2,38.7],[30.0,42.5],[29.1,46.5],[28.5,50.0],
-    [27.0,52.0],[26.5,56.3],[22.0,59.0],[18.0,55.0],[18.0,42.5],
-    [15.0,43.0],[12.6,44.0],[12.0,43.5],[16.0,37.0],[22.0,37.0],
-    [28.0,34.0],[29.5,34.9],[29.5,35.0],
+    [29.5,35.0],[29.2,38.7],[30.0,42.5],          // N border (Aqaba → Iraq)
+    [29.1,46.5],[28.5,50.0],[27.0,52.0],           // NE border / Gulf coast
+    [26.5,56.3],[22.0,59.0],                       // E coast → Oman
+    [18.0,55.0],[15.0,43.0],                       // Yemen border
+    [16.8,42.6],[19.0,41.0],                       // Red Sea coast N from Yemen
+    [21.5,39.2],[24.5,37.5],[27.0,36.0],[28.5,35.5],[29.5,35.0], // Red Sea → Aqaba
   ];
   // Yemen
   const C_YEMEN = [
-    [18.0,42.5],[15.0,43.0],[12.6,44.0],[12.0,45.5],[13.0,48.0],
-    [15.5,50.5],[18.0,55.0],[18.0,42.5],
+    [18.0,42.5],[15.0,43.0],[12.6,44.0],[12.0,45.5],
+    [13.0,48.0],[15.5,50.5],[18.0,55.0],[18.0,42.5],
   ];
-  // Oman / UAE (simplified, fills SE corner)
+  // Oman / UAE
   const C_OMAN = [
-    [26.5,56.3],[24.5,54.5],[23.5,51.5],[22.0,59.0],[25.1,61.0],
-    [31.0,62.0],[31.0,61.5],[26.5,56.3],
+    [26.5,56.3],[24.5,54.5],[23.5,51.5],[22.0,59.0],
+    [25.1,61.0],[31.0,62.0],[31.0,61.5],[26.5,56.3],
   ];
-  // Iran
+  // Iran — routes along S Caspian coast (leaves Caspian as visible gap at top)
   const C_IRAN = [
-    [37.4,44.8],[38.5,48.5],[37.5,50.0],[36.8,54.0],[36.0,60.0],
-    [31.0,61.5],[25.1,61.0],[22.0,59.0],[26.5,56.3],[27.0,52.0],
-    [28.5,50.0],[30.0,48.5],[33.6,46.1],[35.1,45.7],[37.4,44.8],
+    [37.4,44.8],[37.0,49.0],[36.7,50.8],[36.6,54.0], // NW → S Caspian coast
+    [36.0,60.0],[31.0,61.5],[25.1,61.0],[22.0,59.0],  // E border
+    [26.5,56.3],[27.0,52.0],[28.5,50.0],              // Gulf of Oman / Persian Gulf
+    [30.0,48.5],[33.6,46.1],[35.1,45.7],[37.4,44.8],  // Iraq border
   ];
-  // Kuwait (small, between Iraq and Saudi)
+  // Kuwait
   const C_KUWAIT = [
     [30.1,48.0],[29.1,48.0],[29.1,46.5],[29.5,46.5],[30.1,47.7],[30.1,48.0],
   ];
@@ -568,7 +573,7 @@ const AirDefense = (() => {
   ];
   // Jordan
   const C_JORDAN = [
-    [32.7,35.8],[33.4,38.8],[29.2,38.7],[29.5,35.0],[29.6,35.0],
+    [32.7,35.8],[33.4,38.8],[29.2,38.7],[29.5,35.0],
     [30.0,35.0],[31.1,35.4],[31.5,35.5],[31.9,35.5],[32.6,35.6],[32.7,35.8],
   ];
   // Lebanon
@@ -576,7 +581,7 @@ const AirDefense = (() => {
     [33.1,35.1],[33.3,35.6],[33.7,36.0],[34.7,36.6],
     [34.5,36.0],[34.2,35.7],[33.7,35.6],[33.1,35.1],
   ];
-  // Israel (outlined brighter)
+  // Israel
   const C_ISRAEL = [
     [33.3,35.6],[33.1,35.7],[32.7,35.8],[32.6,35.6],[31.9,35.5],
     [31.5,35.5],[31.1,35.4],[30.0,35.0],[29.6,35.0],[29.5,34.8],
@@ -586,50 +591,89 @@ const AirDefense = (() => {
   // Gaza Strip
   const C_GAZA = [[31.6,34.5],[31.2,34.2],[31.2,34.5],[31.6,34.5]];
 
+  // ── Inland water bodies ────────────────────────────────────────────────────
+  // Caspian Sea (S portion visible at top of map, lat 36.5–40°N)
+  const C_CASPIAN = [
+    [40.0,49.2],[40.0,54.2],
+    [37.8,54.0],[36.8,52.5],[36.7,50.5],[37.0,49.2],[38.5,48.9],[40.0,49.2],
+  ];
+  // Dead Sea (Israel/Jordan border, small sliver)
+  const C_DEAD_SEA = [
+    [31.78,35.45],[31.50,35.50],[31.05,35.40],[31.30,35.30],[31.78,35.35],
+  ];
+  // Sea of Galilee / Kinneret
+  const C_GALILEE = [
+    [32.90,35.50],[32.70,35.48],[32.70,35.63],[32.90,35.65],
+  ];
+
   function drawMapRegions() {
     ctx.save();
 
-    // 1. Sea base (fill entire map area with ocean colour)
-    ctx.fillStyle = 'rgba(0,18,55,0.70)';
+    // 1. Ocean base
+    ctx.fillStyle = 'rgba(0,20,60,0.80)';
     ctx.fillRect(0, 0, 480, MAP_H);
 
-    // 2. Land masses (back to front)
-    const LAND  = 'rgba(52,42,18,0.80)';
-    const LBORD = 'rgba(80,65,30,0.55)';
-    geoPoly(C_SUDAN,  LAND, LBORD);
-    geoPoly(C_EGYPT,  LAND, LBORD);
-    geoPoly(C_TURKEY, 'rgba(55,48,22,0.80)', 'rgba(88,75,35,0.55)');
-    geoPoly(C_CYPRUS, LAND, LBORD);
-    geoPoly(C_SAUDI,  'rgba(70,55,15,0.80)', 'rgba(105,82,28,0.55)');
-    geoPoly(C_YEMEN,  'rgba(90,55,10,0.82)', 'rgba(120,75,20,0.60)');
-    geoPoly(C_OMAN,   LAND, LBORD);
-    geoPoly(C_IRAN,   'rgba(90,15,10,0.82)', 'rgba(130,28,18,0.55)');
-    geoPoly(C_KUWAIT, LAND, LBORD);
-    geoPoly(C_IRAQ,   'rgba(72,48,8,0.82)',  'rgba(105,72,18,0.60)');
-    geoPoly(C_SYRIA,  'rgba(62,40,8,0.82)',  'rgba(95,65,20,0.60)');
-    geoPoly(C_JORDAN, LAND, LBORD);
-    geoPoly(C_LEBANON,'rgba(68,38,10,0.82)', 'rgba(100,60,22,0.60)');
+    // 2. Land masses — back to front
+    const SAND  = 'rgba(58,46,18,0.88)';
+    const SBORD = 'rgba(88,70,30,0.60)';
+    geoPoly(C_SUDAN,  SAND, SBORD);
+    geoPoly(C_EGYPT,  SAND, SBORD);
+    geoPoly(C_TURKEY, 'rgba(52,46,20,0.88)', 'rgba(82,72,32,0.60)');
+    geoPoly(C_CYPRUS, SAND, SBORD);
+    geoPoly(C_SAUDI,  'rgba(68,52,14,0.88)', 'rgba(102,80,26,0.60)');
+    geoPoly(C_YEMEN,  'rgba(85,52,8,0.88)',  'rgba(118,72,18,0.65)');
+    geoPoly(C_OMAN,   SAND, SBORD);
+    geoPoly(C_IRAN,   'rgba(88,14,8,0.88)',  'rgba(128,26,16,0.60)');
+    geoPoly(C_KUWAIT, SAND, SBORD);
+    geoPoly(C_IRAQ,   'rgba(70,46,6,0.88)',  'rgba(102,70,16,0.65)');
+    geoPoly(C_SYRIA,  'rgba(60,38,6,0.88)',  'rgba(92,62,18,0.65)');
+    geoPoly(C_JORDAN, SAND, SBORD);
+    geoPoly(C_LEBANON,'rgba(66,36,8,0.88)',  'rgba(98,58,20,0.65)');
 
-    // Gaza (highlighted hostile)
-    geoPoly(C_GAZA, 'rgba(180,60,0,0.40)', 'rgba(255,100,0,0.65)', 1.2);
+    // Gaza — hostile highlight
+    geoPoly(C_GAZA, 'rgba(160,55,0,0.50)', 'rgba(255,100,0,0.70)', 1.2);
 
-    // Israel (bright distinctive highlight)
-    geoPoly(C_ISRAEL, 'rgba(0,130,60,0.32)', 'rgba(0,255,90,0.70)', 1.5);
+    // Israel — friendly highlight
+    geoPoly(C_ISRAEL, 'rgba(0,120,55,0.35)', 'rgba(0,255,90,0.75)', 1.5);
 
-    // 3. Country name labels at geo-projected positions
+    // 3. Inland water bodies (drawn on top of land)
+    const SEA  = 'rgba(0,45,110,0.85)';
+    const SEBR = 'rgba(0,80,160,0.60)';
+    geoPoly(C_CASPIAN,  SEA, SEBR, 1.0);
+    geoPoly(C_DEAD_SEA, 'rgba(0,55,130,0.90)', 'rgba(0,100,180,0.70)', 0.8);
+    geoPoly(C_GALILEE,  'rgba(0,55,130,0.90)', 'rgba(0,100,180,0.70)', 0.8);
+
+    // 4. Country labels
     ctx.font      = '7px Courier New';
     ctx.textAlign = 'center';
     const labels = [
-      { t:'TURKEY',       lat:37.5, lon:37.0, c:'rgba(180,160,80,0.7)'  },
-      { t:'SYRIA',        lat:34.8, lon:38.5, c:'rgba(200,140,60,0.75)' },
-      { t:'IRAQ',         lat:33.0, lon:43.5, c:'rgba(190,150,40,0.75)' },
-      { t:'IRAN',         lat:32.0, lon:53.5, c:'rgba(220,60,50,0.75)'  },
-      { t:'SAUDI ARABIA', lat:24.0, lon:44.0, c:'rgba(170,140,50,0.65)' },
-      { t:'YEMEN',        lat:15.5, lon:47.0, c:'rgba(200,110,30,0.70)' },
-      { t:'JORDAN',       lat:30.5, lon:36.5, c:'rgba(160,130,50,0.70)' },
-      { t:'EGYPT',        lat:27.0, lon:31.5, c:'rgba(160,130,40,0.65)' },
+      { t:'TURKEY',       lat:38.0, lon:36.0, c:'rgba(190,170,90,0.80)'  },
+      { t:'SYRIA',        lat:34.8, lon:38.5, c:'rgba(205,148,65,0.80)'  },
+      { t:'IRAQ',         lat:33.2, lon:43.5, c:'rgba(195,155,45,0.80)'  },
+      { t:'IRAN',         lat:32.5, lon:53.5, c:'rgba(225,65,55,0.80)'   },
+      { t:'SAUDI',        lat:26.0, lon:44.5, c:'rgba(175,145,55,0.75)'  },
+      { t:'ARABIA',       lat:24.5, lon:44.5, c:'rgba(175,145,55,0.75)'  },
+      { t:'YEMEN',        lat:15.5, lon:47.5, c:'rgba(205,115,35,0.75)'  },
+      { t:'JORDAN',       lat:31.0, lon:36.8, c:'rgba(165,135,55,0.75)'  },
+      { t:'EGYPT',        lat:27.5, lon:31.5, c:'rgba(165,135,45,0.70)'  },
+      { t:'OMAN',         lat:22.5, lon:58.0, c:'rgba(160,130,45,0.70)'  },
+      { t:'CASPIAN',      lat:38.5, lon:51.5, c:'rgba(80,160,220,0.75)'  },
+      { t:'SEA',          lat:37.5, lon:51.5, c:'rgba(80,160,220,0.75)'  },
     ];
     for (const lb of labels) {
+      const [lx, ly] = px(lb.lat, lb.lon);
+      ctx.fillStyle = lb.c;
+      ctx.fillText(lb.t, lx, ly);
+    }
+
+    // 5. Water body labels
+    ctx.font = '6px Courier New';
+    const wlabels = [
+      { t:'RED SEA',       lat:21.0, lon:38.0, c:'rgba(80,150,220,0.70)' },
+      { t:'PERSIAN GULF',  lat:27.0, lon:50.5, c:'rgba(80,150,220,0.65)' },
+      { t:'MED. SEA',      lat:34.0, lon:31.5, c:'rgba(80,150,220,0.70)' },
+    ];
+    for (const lb of wlabels) {
       const [lx, ly] = px(lb.lat, lb.lon);
       ctx.fillStyle = lb.c;
       ctx.fillText(lb.t, lx, ly);
